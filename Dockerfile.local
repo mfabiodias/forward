@@ -1,0 +1,21 @@
+ARG NODE_VERSION
+FROM node:${NODE_VERSION}
+# ENV CHOKIDAR_USEPOLLING=true
+WORKDIR /forward-tester
+COPY . .
+
+RUN apt-get update
+RUN wget http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key
+RUN apt-key add mosquitto-repo.gpg.key
+RUN wget http://repo.mosquitto.org/debian/mosquitto-buster.list
+RUN apt-get update
+RUN apt-cache search mosquitto
+RUN apt-get install mosquitto -y
+RUN apt-get install xxd
+RUN apt-get install uuid-runtime
+RUN apt install -y mosquitto-clients
+
+RUN cp dev-entrypoint.sh /usr/local/bin/dev-entrypoint
+RUN chmod 777 /usr/local/bin/dev-entrypoint
+ENTRYPOINT ["dev-entrypoint"]
+CMD ["npm", "start"]
